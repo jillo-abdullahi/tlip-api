@@ -20,7 +20,7 @@ router.post("/items", async (req, res) => {
     country,
   } = req.body;
   const client = await pool.connect();
-  const skuCode = uuidv4(); // Generate a new UUID for the item
+  const skuCode = uuidv4();
 
   try {
     const result = await client.query(
@@ -63,9 +63,7 @@ router.put("/items/:item_id", async (req, res) => {
     name,
     color,
     price,
-    skuCode,
     description,
-    createdOn,
     city,
     postalCode,
     address,
@@ -80,17 +78,15 @@ router.put("/items/:item_id", async (req, res) => {
     const result = await client.query(
       `
       UPDATE supply_chain_items
-      SET name = $1, color = $2, price = $3, skuCode = $4, description = $5, createdOn = $6, city = $7, postalCode = $8, address = $9, quantity = $10, shelfLife = $11, safetyStock = $12, country = $13
-      WHERE id = $14
+      SET name = $1, color = $2, price = $3, description = $4, city = $5, postalCode = $6, address = $7, quantity = $8, shelfLife = $9, safetyStock = $10, country = $11
+      WHERE id = $12
       RETURNING *;
     `,
       [
         name,
         color,
         price,
-        skuCode,
         description,
-        createdOn,
         city,
         postalCode,
         address,
@@ -110,7 +106,7 @@ router.put("/items/:item_id", async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ error: "An error occurred while updating the item" });
+      .json({ error, message: "An error occurred while updating the item" });
   } finally {
     client.release();
   }
@@ -151,6 +147,19 @@ router.post("/items/:item_id/events", async (req, res) => {
   }
 });
 
+// Query all items
+router.get("/items", async (req, res) => {
+  const result = await pool.query(
+    "SELECT * FROM supply_chain_items ORDER BY createdOn"
+  );
+
+  if (result.rows.length > 0) {
+    res.status(200).json(result.rows[0]);
+  } else {
+    res.status(404).json({ error: "No items found" });
+  }
+});
+
 // Query all events of an item
 router.get("/items/:id/events", async (req, res) => {
   const supply_chain_item_id = parseInt(req.params.id);
@@ -159,6 +168,21 @@ router.get("/items/:id/events", async (req, res) => {
     [supply_chain_item_id]
   );
   res.status(200).json(result.rows);
+});
+
+// Query an item by id
+router.get("/items/:id", async (req, res) => {
+  const supply_chain_item_id = parseInt(req.params.id);
+  const result = await pool.query(
+    "SELECT * FROM supply_chain_items WHERE id=$1",
+    [supply_chain_item_id]
+  );
+
+  if (result.rows.length > 0) {
+    res.status(200).json(result.rows[0]);
+  } else {
+    res.status(404).json({ error: "Item not found" });
+  }
 });
 
 // Get the last event of an item
