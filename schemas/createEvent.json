@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "eventType": {
+      "type": "string",
+      "enum": ["Shipment", "Receipt", "Transfer"]
+    },
+    "eventStatus": {
+      "type": "string",
+      "enum": ["Pending", "Cancelled", "Completed"]
+    },
+    "location": {
+      "type": "string"
+    },
+    "custodian": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": ["eventType", "eventStatus", "location", "custodian"],
+  "additionalProperties": false
+}

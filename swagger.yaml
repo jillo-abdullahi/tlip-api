@@ -39,12 +39,14 @@ paths:
                   type: integer
                 safetyStock:
                   type: integer
-                
+
       responses:
         201:
           description: Supply chain item created successfully
         500:
           description: An error occurred while creating the supply chain item
+        400:
+          description: Invalid payload
     get:
       summary: Query all supply chain items ordered by time of creation
       responses:
@@ -100,7 +102,9 @@ paths:
         404:
           description: Supply chain item not found
         500:
-          description: An error occurred while updating the supply chain item
+          description: An error occurred while updating the supply chain item,
+        400:
+          description: Invalid payload
     delete:
       summary: Delete a supply chain item
       parameters:
@@ -155,10 +159,10 @@ paths:
               properties:
                 eventType:
                   type: string
-                  enum: ['Shipment', 'Receipt', 'Transfer']
+                  enum: ["Shipment", "Receipt", "Transfer"]
                 eventStatus:
                   type: string
-                  enum: ['Pending', 'Cancelled', 'Completed']
+                  enum: ["Pending", "Cancelled", "Completed"]
                 notes:
                   type: string
                 location:
@@ -171,7 +175,9 @@ paths:
         404:
           description: Supply chain item not found
         500:
-          description: An error occurred while creating the event
+          description: An error occurred while creating the event,
+        400:
+          description: Invalid payload
     get:
       summary: Query all events of an item
       parameters:

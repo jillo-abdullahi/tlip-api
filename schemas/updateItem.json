@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number"
+    },
+    "quantity": {
+      "type": "number"
+    },
+    "description": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "postalCode": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "shelfLife": {
+      "type": "number"
+    },
+    "safetyStock": {
+      "type": "number"
+    },
+    "country": {
+      "type": "string"
+    }
+  },
+  "minProperties": 1,
+  "additionalProperties": false
+}

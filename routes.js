@@ -3,8 +3,14 @@ const router = express.Router();
 const pool = require("./database");
 const { v4: uuidv4 } = require("uuid");
 
+// runtime validation for routes
+const validatePayload = require("./validationMiddleware");
+const createItemSchema = require("./schemas/createItem.json");
+const updateItemSchema = require("./schemas/updateItem.json");
+const createEventSchema = require("./schemas/createEvent.json");
+
 // Create a new supply chain item
-router.post("/items", async (req, res) => {
+router.post("/items", validatePayload(createItemSchema), async (req, res) => {
   const {
     name,
     color,
@@ -18,6 +24,7 @@ router.post("/items", async (req, res) => {
     safetyStock,
     country,
   } = req.body;
+
   const client = await pool.connect();
   const skuCode = uuidv4();
 
@@ -51,97 +58,105 @@ router.post("/items", async (req, res) => {
 });
 
 // Update supply chain item reference data
-router.put("/items/:item_id", async (req, res) => {
-  const item_id = parseInt(req.params.item_id, 10);
-  const {
-    name,
-    color,
-    price,
-    description,
-    city,
-    postalCode,
-    address,
-    quantity,
-    shelfLife,
-    safetyStock,
-    country,
-  } = req.body;
-  const client = await pool.connect();
+router.put(
+  "/items/:item_id",
+  validatePayload(updateItemSchema),
+  async (req, res) => {
+    const item_id = parseInt(req.params.item_id, 10);
+    const {
+      name,
+      color,
+      price,
+      description,
+      city,
+      postalCode,
+      address,
+      quantity,
+      shelfLife,
+      safetyStock,
+      country,
+    } = req.body;
+    const client = await pool.connect();
 
-  try {
-    const result = await client.query(
-      `
+    try {
+      const result = await client.query(
+        `
       UPDATE supply_chain_items
       SET name = $1, color = $2, price = $3, description = $4, city = $5, postalCode = $6, address = $7, quantity = $8, shelfLife = $9, safetyStock = $10, country = $11
       WHERE id = $12
       RETURNING *;
     `,
-      [
-        name,
-        color,
-        price,
-        description,
-        city,
-        postalCode,
-        address,
-        quantity,
-        shelfLife,
-        safetyStock,
-        country,
-        item_id,
-      ]
-    );
+        [
+          name,
+          color,
+          price,
+          description,
+          city,
+          postalCode,
+          address,
+          quantity,
+          shelfLife,
+          safetyStock,
+          country,
+          item_id,
+        ]
+      );
 
-    if (result.rows.length > 0) {
-      res.status(200).json(result.rows[0]);
-    } else {
-      res.status(404).json({ error: "Item not found" });
+      if (result.rows.length > 0) {
+        res.status(200).json(result.rows[0]);
+      } else {
+        res.status(404).json({ error: "Item not found" });
+      }
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error, message: "An error occurred while updating the item" });
+    } finally {
+      client.release();
     }
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error, message: "An error occurred while updating the item" });
-  } finally {
-    client.release();
   }
-});
+);
 
 // add new events associated with an item
-router.post("/items/:item_id/events", async (req, res) => {
-  const item_id = parseInt(req.params.item_id, 10);
-  const { eventType, eventStatus, location, custodian, notes } = req.body;
-  const client = await pool.connect();
+router.post(
+  "/items/:item_id/events",
+  validatePayload(createEventSchema),
+  async (req, res) => {
+    const item_id = parseInt(req.params.item_id, 10);
+    const { eventType, eventStatus, location, custodian, notes } = req.body;
+    const client = await pool.connect();
 
-  try {
-    // Check if the item exists
-    const itemResult = await pool.query(
-      "SELECT * FROM supply_chain_items WHERE id = $1",
-      [item_id]
-    );
+    try {
+      // Check if the item exists
+      const itemResult = await pool.query(
+        "SELECT * FROM supply_chain_items WHERE id = $1",
+        [item_id]
+      );
 
-    if (itemResult.rowCount === 0) {
-      // If the item does not exist, return a 404 status code
-      return res.status(404).json({ message: "Item not found" });
-    }
+      if (itemResult.rowCount === 0) {
+        // If the item does not exist, return a 404 status code
+        return res.status(404).json({ message: "Item not found" });
+      }
 
-    const result = await client.query(
-      `
+      const result = await client.query(
+        `
       INSERT INTO item_events (item_id, eventTimestamp, eventType, eventStatus, location, custodian, notes)
       VALUES ($1, CURRENT_TIMESTAMP, $2, $3, $4, $5, $6)
       RETURNING *;
     `,
-      [item_id, eventType, eventStatus, location, custodian, notes]
-    );
+        [item_id, eventType, eventStatus, location, custodian, notes]
+      );
 
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error, message: "An error occurred while creating the event" });
-  } finally {
-    client.release();
+      res.status(201).json(result.rows[0]);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error, message: "An error occurred while creating the event" });
+    } finally {
+      client.release();
+    }
   }
-});
+);
 
 // Query all items
 router.get("/items", async (req, res) => {

@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/jillo-abdullahi/tlip-api#readme",
   "dependencies": {
+    "ajv": "^8.12.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
