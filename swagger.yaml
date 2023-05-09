@@ -1,0 +1,206 @@
+openapi: 3.0.0
+info:
+  title: Supply Chain API
+  description: An API to create and keep track of supply chain items
+  version: 1.0.0
+paths:
+  /items:
+    post:
+      summary: Create a new supply chain item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+                price:
+                  type: number
+                  format: float
+                description:
+                  type: string
+                city:
+                  type: string
+                country:
+                  type: string
+                postalCode:
+                  type: string
+                address:
+                  type: string
+                quantity:
+                  type: integer
+                shelfLife:
+                  type: integer
+                safetyStock:
+                  type: integer
+                
+      responses:
+        201:
+          description: Supply chain item created successfully
+        500:
+          description: An error occurred while creating the supply chain item
+    get:
+      summary: Query all supply chain items ordered by time of creation
+      responses:
+        200:
+          description: Supply chain items retrieved successfully
+        404:
+          description: No supply chain items found
+        500:
+          description: An error occurred while retrieving supply chain items
+
+  /items/{item_id}:
+    put:
+      summary: Update supply chain item reference data
+      parameters:
+        - in: path
+          name: item_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+                price:
+                  type: number
+                  format: float
+                description:
+                  type: string
+                city:
+                  type: string
+                country:
+                  type: string
+                postalCode:
+                  type: string
+                address:
+                  type: string
+                quantity:
+                  type: integer
+                shelfLife:
+                  type: integer
+                safetyStock:
+                  type: integer
+      responses:
+        200:
+          description: Supply chain item updated successfully
+        404:
+          description: Supply chain item not found
+        500:
+          description: An error occurred while updating the supply chain item
+    delete:
+      summary: Delete a supply chain item
+      parameters:
+        - in: path
+          name: item_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Supply chain item deleted successfully
+        404:
+          description: Supply chain item not found
+        500:
+          description: An error occurred while deleting the supply chain item
+    get:
+      summary: Query a supply chain item by ID
+      parameters:
+        - in: path
+          name: item_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Supply chain item retrieved successfully
+        404:
+          description: Supply chain item not found
+        500:
+          description: An error occurred while retrieving the supply chain item
+
+  /items/{item_id}/events:
+    post:
+      summary: Add new events associated with an item
+      parameters:
+        - in: path
+          name: item_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - eventType
+                - eventStatus
+                - location
+                - custodian
+              properties:
+                eventType:
+                  type: string
+                  enum: ['Shipment', 'Receipt', 'Transfer']
+                eventStatus:
+                  type: string
+                  enum: ['Pending', 'Cancelled', 'Completed']
+                notes:
+                  type: string
+                location:
+                  type: string
+                custodian:
+                  type: string
+      responses:
+        201:
+          description: Event created successfully
+        404:
+          description: Supply chain item not found
+        500:
+          description: An error occurred while creating the event
+    get:
+      summary: Query all events of an item
+      parameters:
+        - in: path
+          name: item_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Events retrieved successfully
+        404:
+          description: Supply chain item not found or no events found
+        500:
+          description: An error occurred while retrieving events
+
+  /items/{item_id}/events/last:
+    get:
+      summary: Get the last event of an item
+      parameters:
+        - in: path
+          name: item_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Last event retrieved successfully
+        404:
+          description: Supply chain item not found or no events found
+        500:
+          description: An error occurred while retrieving the last event

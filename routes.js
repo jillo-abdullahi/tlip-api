@@ -10,7 +10,6 @@ router.post("/items", async (req, res) => {
     color,
     price,
     description,
-    createdOn,
     city,
     postalCode,
     address,
@@ -157,7 +156,6 @@ router.get("/items", async (req, res) => {
       res.status(404).json({ error: "No items found" });
     }
   } catch (error) {
-    console.error(error);
     res
       .status(500)
       .json({ message: "An error occurred while retrieving the items" });
@@ -166,26 +164,43 @@ router.get("/items", async (req, res) => {
 
 // Query all events of an item
 router.get("/items/:id/events", async (req, res) => {
-  const supply_chain_item_id = parseInt(req.params.id);
-  const result = await pool.query(
-    "SELECT * FROM item_events WHERE item_id=$1 ORDER BY eventTimestamp",
-    [supply_chain_item_id]
-  );
-  res.status(200).json(result.rows);
+  try {
+    const supply_chain_item_id = parseInt(req.params.id);
+    const result = await pool.query(
+      "SELECT * FROM item_events WHERE item_id=$1 ORDER BY eventTimestamp",
+      [supply_chain_item_id]
+    );
+
+    if (result.rows.length > 0) {
+      res.status(200).json(result.rows);
+    } else {
+      res.status(404).json({ error: "No events found" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "An error occurred while retrieving item events" });
+  }
 });
 
 // Query an item by id
 router.get("/items/:id", async (req, res) => {
-  const supply_chain_item_id = parseInt(req.params.id);
-  const result = await pool.query(
-    "SELECT * FROM supply_chain_items WHERE id=$1",
-    [supply_chain_item_id]
-  );
+  try {
+    const supply_chain_item_id = parseInt(req.params.id);
+    const result = await pool.query(
+      "SELECT * FROM supply_chain_items WHERE id=$1",
+      [supply_chain_item_id]
+    );
 
-  if (result.rows.length > 0) {
-    res.status(200).json(result.rows[0]);
-  } else {
-    res.status(404).json({ error: "Item not found" });
+    if (result.rows.length > 0) {
+      res.status(200).json(result.rows[0]);
+    } else {
+      res.status(404).json({ error: "Item not found" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "An error occurred while retrieving the item" });
   }
 });
 
@@ -226,16 +241,25 @@ router.delete("/items/:id", async (req, res) => {
   }
 });
 
-module.exports = router;
-
 // Get the last event of an item
 router.get("/items/:id/events/last", async (req, res) => {
-  const supply_chain_item_id = parseInt(req.params.id);
-  const result = await pool.query(
-    "SELECT * FROM item_events WHERE item_id=$1 ORDER BY eventTimestamp DESC LIMIT 1",
-    [supply_chain_item_id]
-  );
-  res.status(200).json(result.rows[0]);
+  try {
+    const supply_chain_item_id = parseInt(req.params.id);
+    const result = await pool.query(
+      "SELECT * FROM item_events WHERE item_id=$1 ORDER BY eventTimestamp DESC LIMIT 1",
+      [supply_chain_item_id]
+    );
+
+    if (result.rows.length > 0) {
+      res.status(200).json(result.rows[0]);
+    } else {
+      res.status(404).json({ error: "No events found" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "An error occurred while retrieving last item event" });
+  }
 });
 
 module.exports = router;

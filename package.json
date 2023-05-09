@@ -28,7 +28,9 @@
     "express": "^4.18.2",
     "lodash": "^4.17.21",
     "pg": "^8.10.0",
-    "uuid": "^9.0.0"
+    "swagger-ui-express": "^4.6.3",
+    "uuid": "^9.0.0",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "node-pg-migrate": "^6.2.2"
