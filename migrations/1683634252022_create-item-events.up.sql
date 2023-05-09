@@ -10,17 +10,20 @@ CREATE TABLE supply_chain_items (
     postalCode VARCHAR(20),
     address TEXT,
     quantity INTEGER,
-    shelfLife INTERVAL,
+    shelfLife INTEGER,
     safetyStock INTEGER,
     country VARCHAR(255)
 );
 
+CREATE TYPE event_type_enum AS ENUM ('Shipment', 'Receipt', 'Transfer');
+CREATE TYPE event_status_enum AS ENUM ('Pending', 'Cancelled', 'Completed');
+
 CREATE TABLE item_events (
     id SERIAL PRIMARY KEY,
-    item_id INTEGER REFERENCES supply_chain_items_v2(id),
+    item_id INTEGER REFERENCES supply_chain_items(id),
     eventTimestamp TIMESTAMP,
-    eventType ENUM('Shipment', 'Receipt', 'Transfer'),
-    eventStatus ENUM('Pending', 'Cancelled', 'Completed'),
+    eventType event_type_enum NOT NULL,
+    eventStatus event_status_enum NOT NULL,
     location VARCHAR(255),
     custodian VARCHAR(255),
     notes TEXT
