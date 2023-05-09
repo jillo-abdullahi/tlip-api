@@ -1,0 +1,36 @@
+{
+  "name": "tlip-api",
+  "version": "1.0.0",
+  "description": "api to track items",
+  "main": "app.js",
+  "scripts": {
+    "migrate": "node-pg-migrate",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jillo-abdullahi/tlip-api.git"
+  },
+  "keywords": [
+    "express",
+    "nodejs"
+  ],
+  "author": "jillo woche",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jillo-abdullahi/tlip-api/issues"
+  },
+  "homepage": "https://github.com/jillo-abdullahi/tlip-api#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "lodash": "^4.17.21",
+    "pg": "^8.10.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "node-pg-migrate": "^6.2.2"
+  }
+}
