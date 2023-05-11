@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.8"
 
 services:
   api:
@@ -7,24 +7,27 @@ services:
       - "3000:3000"
     depends_on:
       - db
-    env_file:
-      - .env
     environment:
-      - DATABASE_URL=postgres://jillowoche:password@db:5432/jillowoche
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=postgres
     command: ["sh", "-c", "npm install && npm run migrate up && npm start"]
 
   db:
-    image: "postgres:latest"
-    environment:
-      - POSTGRES_USER=jillowoche
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=jillowoche
-    volumes:
-      - .:/docker-entrypoint-initdb.d
-      - postgres-data:/var/lib/postgresql/data
+    image: postgres:latest
+    container_name: db
+    hostname: db
     ports:
       - 5432:5432
-    hostname: db
-
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
 volumes:
   postgres-data:
