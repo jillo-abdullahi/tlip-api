@@ -29,7 +29,7 @@ DB_USER=your_db_username
 DB_PASSWORD=your_db_password
 DB_HOST=localhost
 DB_PORT=5432
-DB_DATABASE=your_db_name
+DB_NAME=your_db_name
 ```
 
 Replace `your_db_username`, `your_db_password`, and `your_db_name` with your actual PostgreSQL credentials and database name. If your database doesn't require a password, you can leave the `DB_PASSWORD` field empty or remove it from the `.env` file.
