@@ -29,10 +29,17 @@ npm install
 3. Create a `.env` file in the root directory of the project and set the required environment variables for the database connection:
 
 ```plaintext
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=postgres
+
+# db url string for purpose of deployment to render.com
 DATABASE_URL=postgres://<DB_USER>:<DB_PASSWORD@localhost:5432/<DB_NAME>
 ```
 
-Replace `DB_USER`, `DB_PASSWORD`, and `DB_NAME` with your actual PostgreSQL credentials and database name. If your database doesn't require a password, you can leave the `DB_PASSWORD` field empty or remove it from the `.env` file.
+Replace `DB_USER`, `DB_PASSWORD`, and `DB_NAME`,  with your actual PostgreSQL credentials and database name. If your database doesn't require a password, you can leave the `DB_PASSWORD` field empty or remove it from the `.env` file.
 
 4. Run the migrations to set up the database schema:
 
